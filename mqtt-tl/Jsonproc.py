@@ -83,51 +83,54 @@ def message_handler(client,msg,topic):
     #client.q.put(data) #put messages on queue
     data['user'] = key_handler(key)
     print(data)
+  
+def keyadder(keyfile):
+    with open ('keys.txt', 'w') as jsonfile:
+        json.dump(keyfile, jsonfile, indent = 4)
 
-def add_key(key):
-    with open('keys.json') as jsonfile:
-        keyfile = json.load(jsonfile)
-    print('Unknown Key/User\n Enter Name:\n')
-    newname= str(input())
-    y = {"user" : newname,
-         "uid" : key}
-    keyfile['user'].append(y)
-    
 
 def key_handler(key):
-    print('f')
-    i = 0
-    with open ('keys.json', 'a') as jsonfile:
-        
+        isnew = True
         try:
-            #see if we can load data from file
-            keyfile = json.load(jsonfile)
-        except:
-            keyfile = collections.orderedDict()
-            print('h')
-    isnew = True
-    
-    try:
-        for object in keyfile['uid']:
-            print('i')
-            i = i+1
-            if key == object['uid']:
+            with open ('keys.txt') as jsonfile:
+                keyfile = json.load(jsonfile)
                 print('j')
-                isnew = False
-                return object['name']
-            if isnew == True:
-                print('Unknown Key/User\n Enter Name:\n')
+                for x in keyfile.items():
+                    print(keyfile[x]['key'])
+                    if key == keyfile[x]['key']:
+                        print('k')
+                        isnew = False
+                        return keyfile[y]['name']
+                if isnew == True:
+                    print('Unknown Key/User\nEnter Name:\n')
+                    newname= str(input())
+                    newentry = {'user' : {"key" : key,
+                        "name" : newname}}
+                    jsonfile.close()
+                    keyfile.append(newentry)
+                    keyadder(keyfile)
+                    return(newname)
+
+        except FileNotFoundError:
+            with open ('keys.txt', 'a') as jsonfile:
+                print('f')
+                keyfile = dict()
+                print('Unknown Key/User & no File found\nEnter Name:\n')
                 newname= str(input())
-                temp = {key : newname}
-                keyfile += temp
+                print('l')
+                newentry = { 1 : {"key" : key,
+                        "name" : newname}
+                }
+                print('i')
+                keyfile['user'] = newentry
+                print('k')
+                json.dump(keyfile, jsonfile, indent = 4)
+                isnew = False
+                print('t')
                 return(newname)
-    except: 
-        if isnew == True:
-            print('Unknown Key/User\n Enter Name:\n')
-            newname= str(input())
-            temp = {key : newname}
-            keyfile += temp
-            return(newname)
+
+            
+        
 
 
 
