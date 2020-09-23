@@ -19,7 +19,7 @@ class MQTTClient(mqtt.Client):#extend the paho client class
       self.sub_topic="painlessMesh/#"
       self.sub_topics=[] #multiple topics
       self.sub_qos=0
-      self.broker="127.0.0.1"
+      self.broker="192.168.0.199"
       self.port=1883
       self.keepalive=60
       self.cname="logger"
@@ -83,54 +83,49 @@ def message_handler(client,msg,topic):
     #client.q.put(data) #put messages on queue
     data['user'] = key_handler(key)
     print(data)
-  
-def keyadder(keyfile):
-    with open ('keys.txt', 'w') as jsonfile:
+
+def add_key(newentry, keyfile):
+    with open('keys.json', 'w') as jsonfile:
+        print('h')
         json.dump(keyfile, jsonfile, indent = 4)
+    
 
 
 def key_handler(key):
         isnew = True
         try:
-            with open ('keys.txt') as jsonfile:
+            with open ('keys.json') as jsonfile:
                 keyfile = json.load(jsonfile)
-                print('j')
-                for x in keyfile.items():
-                    print(keyfile[x]['key'])
-                    if key == keyfile[x]['key']:
-                        print('k')
+                keyaccess = keyfile['user']
+                for keycode in keyaccess:
+                    if key == keycode['key']:
                         isnew = False
-                        return keyfile[y]['name']
+                        return keycode['name']
                 if isnew == True:
                     print('Unknown Key/User\nEnter Name:\n')
                     newname= str(input())
-                    newentry = {'user' : {"key" : key,
-                        "name" : newname}}
+                    newentry = {"key" : key,
+                        "name" : newname}
+                    keyfile['user'].append(newentry)
+                    print(keyfile)
+                    #json.dump(keyfile, jsonfile, indent = 4)
+                    print('no here')
                     jsonfile.close()
-                    keyfile.append(newentry)
-                    keyadder(keyfile)
+                    add_key(newentry, keyfile)
                     return(newname)
 
         except FileNotFoundError:
-            with open ('keys.txt', 'a') as jsonfile:
-                print('f')
+            with open ('keys.json', 'a') as jsonfile:
                 keyfile = dict()
                 print('Unknown Key/User & no File found\nEnter Name:\n')
                 newname= str(input())
-                print('l')
-                newentry = { 1 : {"key" : key,
+                newentry = {"key" : key,
                         "name" : newname}
-                }
-                print('i')
-                keyfile['user'] = newentry
-                print('k')
+                userlist = [newentry]
+                keyfile['user'] = userlist
                 json.dump(keyfile, jsonfile, indent = 4)
                 isnew = False
-                print('t')
                 return(newname)
-
-            
-        
 
 
 
